@@ -51,7 +51,7 @@ class BayesianOptimization:
         # Define nested target function to work with SMAC3
         def target_function(config, seed=self.seed) -> float:
             # Initialize pipeline from configuration
-            model = initialize_pipeline(config, X_train.shape[1], verbose=self.verbose)
+            model = initialize_pipeline(config, problem_type=self.problem_type, verbose=self.verbose)
 
             pbar.set_postfix(
                 {"Fitting Model": str(config.get('model')).split('.')[-1],
@@ -82,7 +82,7 @@ class BayesianOptimization:
 
                 # Loop over folds
                 for train_index, val_index in kf.split(X):
-                    model = initialize_pipeline(config, X_train.shape[1], problem_type=self.problem_type,
+                    model = initialize_pipeline(config, problem_type=self.problem_type,
                                                 verbose=self.verbose)
 
                     X_train_fold, X_val_fold = X.iloc[train_index], X.iloc[val_index]

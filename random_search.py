@@ -72,7 +72,7 @@ class RandomSearch:
                     test_scores_cv = []
 
                     for train_index, val_index in kf.split(X):
-                        model = initialize_pipeline(config, X_train.shape[1], problem_type=self.problem_type,
+                        model = initialize_pipeline(config, problem_type=self.problem_type,
                                                     verbose=self.verbose)
 
                         X_train, X_val = X.iloc[train_index], X.iloc[val_index]
