@@ -61,24 +61,17 @@ def run_experiment_on_dataset(X_train, y_train, X_val, y_val, X_test, y_test,
     rs = RandomSearch(iterations=config.iterations, verbose=config.debugging, problem_type='binary', cv=cv)
 
     bo = BayesianOptimization(iterations=config.iterations, problem_type='binary', verbose=config.debugging,
-                              prevention=None, cv=cv, seed=seed)
-
-    bo_thresholdout = BayesianOptimization(iterations=config.iterations, verbose=config.debugging,
-                                           prevention='thresholdout', tho_noise=noise_rate,
-                                           seed=seed, problem_type='binary', cv=cv)
+                              cv=cv, seed=seed)
 
     # Fit HPO algorithms
     rs.fit(X_train, y_train, X_val, y_val, X_test, y_test)
     bo.fit(X_train, y_train, X_val, y_val, X_test, y_test)
-    bo_thresholdout.fit(X_train, y_train, X_val, y_val, X_test, y_test)
 
     # Check if experiment fully succeeded
     if len(rs.public_scores) == config.iterations and \
             len(bo.public_scores) == config.iterations and \
-            len(bo_thresholdout.public_scores) == config.iterations and \
             len(rs.private_scores) == config.iterations and \
-            len(bo.private_scores) == config.iterations and \
-            len(bo_thresholdout.private_scores) == config.iterations:
+            len(bo.private_scores) == config.iterations:
         # Save results
         results = {'dataset_id': dataset_id,
                    'seed': seed,
@@ -89,9 +82,6 @@ def run_experiment_on_dataset(X_train, y_train, X_val, y_val, X_test, y_test,
                    'bo_public': bo.public_scores,
                    'bo_private': bo.private_scores,
                    'bo_configs': bo.configs,
-                   'tho_public': bo_thresholdout.public_scores,
-                   'tho_private': bo_thresholdout.private_scores,
-                   'tho_configs': bo_thresholdout.configs,
                    'train_val_test': (len(X_train), len(X_val), len(X_test)),
                    'n_features': X_train.shape[1]}
 

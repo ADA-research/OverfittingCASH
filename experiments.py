@@ -26,7 +26,6 @@ class Config:
         self.validation_samples = 500
         self.iterations = 250
         self.debugging = False
-        self.noise_rate = 0.25
 
         if not os.path.exists(self.out_dir):
             os.mkdir(self.out_dir)
@@ -133,16 +132,11 @@ def run_experiment_on_dataset(dataset_id, cv=None, problem_type='binary'):
     rs = RandomSearch(iterations=config.iterations, verbose=config.debugging, problem_type=problem_type, cv=cv)
 
     bo = BayesianOptimization(iterations=config.iterations, problem_type=problem_type, verbose=config.debugging,
-                              prevention=None, cv=cv, seed=seed)
-
-    bo_thresholdout = BayesianOptimization(iterations=config.iterations, verbose=config.debugging,
-                                           prevention='thresholdout', tho_noise=config.noise_rate,
-                                           seed=seed, problem_type=problem_type, cv=cv)
+                              cv=cv, seed=seed)
 
     # Fit all HPO algorithms
     rs.fit(X_train, y_train, X_val, y_val, X_test, y_test)
     bo.fit(X_train, y_train, X_val, y_val, X_test, y_test)
-    bo_thresholdout.fit(X_train, y_train, X_val, y_val, X_test, y_test)
 
     # Store results in dictionary
     results = {'dataset_id': dataset_id,
@@ -154,9 +148,6 @@ def run_experiment_on_dataset(dataset_id, cv=None, problem_type='binary'):
                'bo_public': bo.public_scores,
                'bo_private': bo.private_scores,
                'bo_configs': bo.configs,
-               'tho_public': bo_thresholdout.public_scores,
-               'tho_private': bo_thresholdout.private_scores,
-               'tho_configs': bo_thresholdout.configs,
                'train_val_test': (len(X_train), len(X_val), len(X_test)),
                'n_features': X_train.shape[1]}
 

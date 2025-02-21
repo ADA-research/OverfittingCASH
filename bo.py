@@ -8,13 +8,11 @@ import pandas as pd
 from sklearn.model_selection import KFold
 
 from smac import HyperparameterOptimizationFacade, Scenario
-from overfit_prevention import Thresholdout
 from pathlib import Path
 
 
 class BayesianOptimization:
-    def __init__(self, problem_type='classification', iterations=1000, verbose=False, prevention=None,
-                 tho_noise=None, cv=None, seed=0):
+    def __init__(self, problem_type='classification', iterations=1000, verbose=False, cv=None, seed=0):
 
         self.iterations = iterations
 
@@ -24,8 +22,6 @@ class BayesianOptimization:
         self.verbose = verbose
 
         self.problem_type = problem_type
-        self.prevention = prevention
-        self.thresholdout_noise = tho_noise
         self.seed = seed
 
         # Define metric to score configurations
@@ -43,10 +39,6 @@ class BayesianOptimization:
 
     def fit(self, X_train, y_train, X_val, y_val, X_test, y_test):
         pbar = tqdm(total=self.iterations, desc='BO')
-
-        # Define thresholdout object if selected
-        if self.prevention == 'thresholdout':
-            thresholdout = Thresholdout(y_val, noise_rate=self.thresholdout_noise)
 
         # Define nested target function to work with SMAC3
         def target_function(config, seed=self.seed) -> float:
@@ -116,20 +108,13 @@ class BayesianOptimization:
 
             pbar.update(1)
 
-            # When thresholdout is used, return validation score from thresholdout
-            # The returned values in this function are used to guide BO
-            if self.prevention == 'thresholdout':
-                train_score = self.score(y_train, model.predict(X_train))
-                val_score = thresholdout.score(train_score, val_score)
-                return val_score
-
             if self.problem_type != 'regression':
                 return 1 - val_score
             else:
                 return -val_score
 
         # Scenario object specifying the optimization environment
-        scenario = Scenario(self.config_space, output_directory=Path(f"smac3_output/{self.prevention}/{self.seed}"),
+        scenario = Scenario(self.config_space, output_directory=Path(f"smac3_output/{self.seed}"),
                             deterministic=True, n_trials=self.iterations, seed=self.seed)
 
         # Use SMAC to find the best configuration/hyperparameters
