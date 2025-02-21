@@ -16,6 +16,11 @@ dataset:
 Installation of the requirements works on Linux or Mac. Due to the usage of the smac package, installation on Windows
 can be done using WSL.
 
+After experiments.py has produced some results, visualize.py can be used to produce the holdout plots from Figure 2 in
+the paper:
+
+5. `python3 visualize.py`
+
 ## Datasets
 
 ### Large Scale Holdout Experiments
