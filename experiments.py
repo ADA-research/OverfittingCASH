@@ -22,7 +22,7 @@ class Config:
     """
 
     def __init__(self):
-        self.out_dir = 'results/openml'
+        self.out_dir = 'results/openml-classification'
         self.validation_samples = 500
         self.iterations = 250
         self.debugging = False
