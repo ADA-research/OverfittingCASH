@@ -109,3 +109,8 @@ varying validation sizes. These datasets were selected from OpenML-CC18 and incl
 | 1461   | bank-marketing | 45211         | 17           | 2           |
 | 23517  | numerai28.6    | 96320         | 22           | 2           |
 
+@article{SchroderOverfitting2025,
+    author={Sietse Schröder and Mitra Baratchi and Jan N. van Rijn},
+    title={Overfitting in Combined Algorithm Selection and Hyperparameter Optimization},
+    year={2025}
+}
